@@ -9,6 +9,7 @@ const orderByMap = {
   old: "b.publication_date",
 };
 
+// TO-DO 쿼리 스트링일 때도 동작하게 바꾸기
 export const selectBookInfo = async (keyword, category, sDate, eDate, orderBy, page) => {
   let conn;
   try {
@@ -25,13 +26,12 @@ export const selectBookInfo = async (keyword, category, sDate, eDate, orderBy, p
     values.push(limit, offset);
 
     const sql = `
-    select b.id, c.name, b.title, b.author, b.publication_date, b.catchpharase, b.price, i.url, count(l.book_id) as like_count
+    select b.id, b.category_id, b.title, b.author, b.publication_date, b.catchpharase, b.price, i.url, count(l.book_id) as like_count
     from book b
-    join category c on b.category_id = c.id
     join image i on b.id = i.book_id
     left join likes l on b.id = l.book_id
     where ${conditionsString}
-    group by b.id, c.name, b.title, b.author, b.publication_date, b.catchpharase, b.price, i.url
+    group by b.id, b.category_id, b.title, b.author, b.publication_date, b.catchpharase, b.price, i.url
     ${orderByString}
     limit ? offset ?
     `;

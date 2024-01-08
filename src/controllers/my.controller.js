@@ -5,7 +5,7 @@ const __dirname = path.resolve();
 
 import { getIdFromToken, isProperToken } from "../middleware/verifyToken.js";
 import { selectUserforMyPage, selectUserPassword, updateUserInfo } from "../models/my.model.js";
-import { genHashedPassword, comparePassword } from "../middleware/password.js";
+import { genHashedPassword } from "../middleware/password.js";
 
 export const my_page = (req, res) => {
   try {
@@ -36,8 +36,11 @@ export const updateMyInfo = async (req, res) => {
     const authID = getIdFromToken(req.headers.authorization.split(" ")[1]);
     isProperToken(authID);
 
-    const { existingPassword } = await selectUserPassword(authID);
-    await comparePassword(existingPassword, old_password);
+    const { db_password } = await selectUserPassword(authID);
+    const isPasswordMatch = await bcrypt.compare(old_password, db_password);
+    if (!isPasswordMatch) {
+      throw { code: code.BAD_REQUEST, message: "비밀번호를 잘못 입력하셨습니다." };
+    }
 
     isNewPasswordMatch(new_password, new_password_check);
     const hashedNewPassword = await genHashedPassword(new_password);

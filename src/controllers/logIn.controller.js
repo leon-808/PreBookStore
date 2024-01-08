@@ -6,8 +6,8 @@ const env = dotenv.config().parsed;
 import path from "path";
 const __dirname = path.resolve();
 
+import { isProperToken } from "../middleware/verifyToken.js";
 import { selectUserforLogin } from "../models/login.model.js";
-import { comparePassword } from "../middleware/password.js";
 
 export const logIn_page = (req, res) => {
   try {
@@ -22,19 +22,13 @@ export const proceedLogIn = async (req, res) => {
   try {
     const { id, password } = req.body;
     const { db_id, db_password } = await selectUserforLogin(id);
-    isProperID(db_id, res);
-    await comparePassword(db_password, password);
+    isProperToken(db_id);
+    await bcrypt.compare(password, db_password);
     issueToken(id, res);
   } catch (err) {
     console.log(err);
     if (err.code === code.UNAUTHORIZED) res.status(code.UNAUTHORIZED).json(err.message);
     res.status(code.INTERNAL_SERVER_ERROR);
-  }
-};
-
-const isProperID = (db_id) => {
-  if (!db_id) {
-    throw { code: code.UNAUTHORIZED, message: "존재하지 않는 아이디입니다. 아이디를 다시 입력해주세요." };
   }
 };
 

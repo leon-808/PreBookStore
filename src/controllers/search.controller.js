@@ -9,13 +9,15 @@ export const search_page = (req, res) => {
   try {
     res.sendFile(path.join(__dirname, "/views/search.html"));
   } catch (err) {
+    console.log(err);
     res.status(code.INTERNAL_SERVER_ERROR).sendFile(path.join(__dirname, "/views/500.html"));
   }
 };
 
 export const getSearchResult = async (req, res) => {
   try {
-    const [keyword, category, sDate, eDate, orderBy, page] = ifBooksParamNull(req.query);
+    const [encodedKeyword, encodedCategory, sDate, eDate, orderBy, page] = ifBooksParamNull(req.query);
+    const keyword = decodeURIComponent(encodedKeyword);
     const result = await selectBookInfo(keyword, category, sDate, eDate, orderBy, page);
     res.status(code.OK).json(result);
   } catch (err) {
