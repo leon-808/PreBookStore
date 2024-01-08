@@ -45,7 +45,7 @@ export const updateMyInfo = async (req, res) => {
     const { db_password } = await selectUserPassword(user_id);
     const isPasswordMatch = await bcrypt.compare(old_password, db_password);
     if (!isPasswordMatch) {
-      throw { code: code.BAD_REQUEST, message: "비밀번호를 잘못 입력하셨습니다." };
+      return res.status(code.BAD_REQUEST).json("비밀번호를 잘못 입력하셨습니다.");
     }
 
     isNewPasswordMatch(new_password, new_password_check);
@@ -54,7 +54,7 @@ export const updateMyInfo = async (req, res) => {
     res.status(code.OK).json("회원 정보 수정 완료");
   } catch (err) {
     console.log(err);
-    if (err.code === code.UNAUTHORIZED || err.code === code.BAD_REQUEST) res.status(err.code).json(err.message);
+    if (err.code === code.UNAUTHORIZED) res.status(err.code).json(err.message);
     res.status(code.INTERNAL_SERVER_ERROR);
   }
 };
