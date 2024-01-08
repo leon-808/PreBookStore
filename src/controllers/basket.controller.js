@@ -15,11 +15,8 @@ export const basket_page = (req, res) => {
 
 export const getBasketList = async (req, res) => {
   try {
-    let user_id;
-    if (req.headers.authorization) {
-      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
-    }
-    isProperToken(user_id);
+    const user_id = getIdFromToken(req);
+    if (!isProperToken(user_id, res, code)) return;
     const result = await selectBooksinBasket(user_id);
     res.status(code.OK).json(result);
   } catch (err) {
@@ -31,11 +28,8 @@ export const getBasketList = async (req, res) => {
 export const addBookinBasket = async (req, res) => {
   try {
     const isbn = req.params.isbn;
-    let user_id;
-    if (req.headers.authorization) {
-      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
-    }
-    isProperToken(user_id);
+    const user_id = getIdFromToken(req);
+    if (!isProperToken(user_id, res, code)) return;
     await insertBookinBasket(user_id, isbn);
     res.status(code.CREATED).json("장바구니에 도서 등록");
   } catch (err) {
@@ -51,11 +45,8 @@ export const updateBasketWhenUnload = async (req, res) => {
     if (!isbn_list || isbn_list.length === 0) {
       return res.status(code.OK).json("장바구니 업데이트 없음");
     }
-    let user_id;
-    if (req.headers.authorization) {
-      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
-    }
-    isProperToken(user_id);
+    const user_id = getIdFromToken(req);
+    if (!isProperToken(user_id, res, code)) return;
     await updateBooksinBasket(user_id, isbn_list, quantity_list, selected_list);
     res.status(code.OK).json("장바구니 업데이트 완료");
   } catch (err) {

@@ -22,12 +22,11 @@ export const proceedLogIn = async (req, res) => {
   try {
     const { id, password } = req.body;
     const { db_id, db_password } = await selectUserforLogin(id);
-    isProperToken(db_id);
+    if (!isProperToken(user_id, res, code)) return;
     await bcrypt.compare(password, db_password);
     issueToken(id, res);
   } catch (err) {
     console.log(err);
-    if (err.code === code.UNAUTHORIZED) res.status(code.UNAUTHORIZED).json(err.message);
     res.status(code.INTERNAL_SERVER_ERROR);
   }
 };

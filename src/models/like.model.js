@@ -5,10 +5,7 @@ export const insertLike = async (isbn, user_id) => {
   let conn;
   try {
     conn = await db.getConnection();
-    const sql = `
-    insert into likes 
-    values(?, ?)
-    `;
+    const sql = `insert into likes values(?, ?)`;
     const values = [isbn, user_id];
     await conn.query(sql, values);
     return;

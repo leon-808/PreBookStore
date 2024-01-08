@@ -18,10 +18,7 @@ export const my_page = (req, res) => {
 
 export const myDetails = async (req, res) => {
   try {
-    let user_id;
-    if (req.headers.authorization) {
-      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
-    }
+    const user_id = getIdFromToken(req);
     if (user_id) {
       const userInfo = await selectUserforMyPage(user_id);
       return res.status(code.OK).json(userInfo);
@@ -36,11 +33,8 @@ export const myDetails = async (req, res) => {
 export const updateMyInfo = async (req, res) => {
   try {
     const { old_password, new_password, new_password_check, tel, email, address } = req.body;
-    let user_id;
-    if (req.headers.authorization) {
-      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
-    }
-    isProperToken(user_id);
+    const user_id = getIdFromToken(req);
+    if (!isProperToken(user_id, res, code)) return;
 
     const { db_password } = await selectUserPassword(user_id);
     const isPasswordMatch = await bcrypt.compare(old_password, db_password);

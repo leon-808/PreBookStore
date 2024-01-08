@@ -17,10 +17,7 @@ export const detail_page = (req, res) => {
 export const getDetailofBook = async (req, res) => {
   try {
     const isbn = req.params.isbn;
-    let user_id;
-    if (req.headers.authorization) {
-      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
-    }
+    const user_id = getIdFromToken(req);
     const result = await selectBookInfo(isbn, user_id);
     res.status(code.OK).json(result);
   } catch (err) {
