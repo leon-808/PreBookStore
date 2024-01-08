@@ -18,9 +18,12 @@ export const my_page = (req, res) => {
 
 export const myDetails = async (req, res) => {
   try {
-    const authID = getIdFromToken(req.headers.authorization.split(" ")[1]);
-    if (authID) {
-      const userInfo = await selectUserforMyPage(authID);
+    let user_id;
+    if (req.headers.authorization) {
+      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
+    }
+    if (user_id) {
+      const userInfo = await selectUserforMyPage(user_id);
       return res.status(code.OK).json(userInfo);
     }
     res.status(code.UNAUTHORIZED);
@@ -33,10 +36,13 @@ export const myDetails = async (req, res) => {
 export const updateMyInfo = async (req, res) => {
   try {
     const { old_password, new_password, new_password_check, tel, email, address } = req.body;
-    const authID = getIdFromToken(req.headers.authorization.split(" ")[1]);
-    isProperToken(authID);
+    let user_id;
+    if (req.headers.authorization) {
+      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
+    }
+    isProperToken(user_id);
 
-    const { db_password } = await selectUserPassword(authID);
+    const { db_password } = await selectUserPassword(user_id);
     const isPasswordMatch = await bcrypt.compare(old_password, db_password);
     if (!isPasswordMatch) {
       throw { code: code.BAD_REQUEST, message: "비밀번호를 잘못 입력하셨습니다." };
@@ -44,7 +50,7 @@ export const updateMyInfo = async (req, res) => {
 
     isNewPasswordMatch(new_password, new_password_check);
     const hashedNewPassword = await genHashedPassword(new_password);
-    await updateUserInfo(hashedNewPassword, tel, email, address, authID);
+    await updateUserInfo(hashedNewPassword, tel, email, address, user_id);
     res.status(code.OK).json("회원 정보 수정 완료");
   } catch (err) {
     console.log(err);

@@ -1,26 +1,39 @@
+import code from "http-status-codes";
 import path from "path";
 const __dirname = path.resolve();
+
+import { getIdFromToken, isProperToken } from "../middleware/verifyToken.js";
+import { insertBookinBasket } from "../models/basket.model.js";
 
 export const basket_page = (req, res) => {
   try {
     res.sendFile(path.join(__dirname, "/views/basket.html"));
   } catch (err) {
-    res.status(500).sendFile(path.join(__dirname, "/views/500.html"));
+    res.status(code.INTERNAL_SERVER_ERROR).sendFile(path.join(__dirname, "/views/500.html"));
   }
 };
 
-export const addBookinBasket = (req, res) => {
+export const addBookinBasket = async (req, res) => {
   try {
-    res.status(201).json("장바구니에 도서 등록");
+    const isbn = req.params.isbn;
+    let user_id;
+    if (req.headers.authorization) {
+      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
+    }
+    isProperToken(user_id);
+    await insertBookinBasket(user_id, isbn);
+    res.status(code.CREATED).json("장바구니에 도서 등록");
   } catch (err) {
-    res.status(500);
+    console.log(err);
+    res.status(code.INTERNAL_SERVER_ERROR).end();
   }
 };
 
 export const deleteBookinBasket = (req, res) => {
   try {
-    res.status(200).json("장바구니의 도서 삭제");
+    res.status(code.OK).json("장바구니의 도서 삭제");
   } catch (err) {
-    res.status(500);
+    console.log(err);
+    res.status(code.INTERNAL_SERVER_ERROR).end();
   }
 };

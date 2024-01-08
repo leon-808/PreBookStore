@@ -3,6 +3,3 @@ const url =
 let encoded = url.replace(/[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/g, (match) => {
   return encodeURIComponent(match);
 });
-const decoded = decodeURIComponent("%ED%95%B4%EB%A6%AC");
-console.log(encoded);
-console.log(decoded);

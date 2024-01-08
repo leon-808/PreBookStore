@@ -23,7 +23,10 @@ export const enableLike = async (req, res) => {
 export const disableLike = async (req, res) => {
   try {
     const isbn = req.params.isbn;
-    const user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
+    let user_id;
+    if (req.headers.authorization) {
+      user_id = getIdFromToken(req.headers.authorization.split(" ")[1]);
+    }
     isProperToken(user_id);
     await deleteLike(isbn, user_id);
     res.status(200).json("좋아요 비활성");
