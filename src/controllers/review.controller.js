@@ -1,42 +1,27 @@
+import code from "http-status-codes";
 import path from "path";
 const __dirname = path.resolve();
+import Database from "../../db.js";
+const db = Database.getInstance();
+
+import { errorHandlerDB } from "../middleware/repositoryErrorHandler.middleware.js";
 
 export const getRecentReviews = (req, res) => {
-  try {
-    res.status(200).json("해당 도서 최근 리뷰 가져오기");
-  } catch (err) {
-    res.status(500);
-  }
+  res.status(code.OK).json("해당 도서 최근 리뷰 가져오기");
 };
 
 export const getReviewsbyPage = (req, res) => {
-  try {
-    res.status(200).json("해당 도서 페이지별 리뷰 가져오기");
-  } catch (err) {
-    res.status(500);
-  }
+  res.status(code.OK).json("해당 도서 페이지별 리뷰 가져오기");
 };
 
 export const createReview = (req, res) => {
-  try {
-    res.status(200).json("리뷰 작성");
-  } catch (err) {
-    res.status(500);
-  }
+  res.status(code.OK).json("리뷰 작성");
 };
 
 export const updateReview = (req, res) => {
-  try {
-    res.status(200).json("리뷰 수정");
-  } catch (err) {
-    res.status(500);
-  }
+  res.status(code.OK).json("리뷰 수정");
 };
 
 export const deleteReview = (req, res) => {
-  try {
-    res.status(200).json("리뷰 삭제");
-  } catch (err) {
-    res.status(500);
-  }
+  res.status(code.OK).json("리뷰 삭제");
 };

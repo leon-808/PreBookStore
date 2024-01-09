@@ -1,31 +1,16 @@
-import Database from "../../db.js";
-const db = Database.getInstance();
+export const selectBookInfo = async (conn, keyword, category, sDate, eDate, orderBy, page) => {
+  let conditions = ["i.thumbnail = 1"];
+  let values = [];
+  const conditionsString = conditionSQL(keyword, category, sDate, eDate, conditions, values);
 
-const orderByMap = {
-  like: "like_count desc",
-  expansive: "b.price desc",
-  cheap: "b.price",
-  new: "b.publication_date desc",
-  old: "b.publication_date",
-};
+  conditions = ["order by "];
+  const orderByString = orderBySQL(orderBy, conditions);
 
-// TO-DO 쿼리 스트링일 때도 동작하게 바꾸기
-export const selectBookInfo = async (keyword, category, sDate, eDate, orderBy, page) => {
-  let conn;
-  try {
-    conn = await db.getConnection();
-    let conditions = ["i.thumbnail = 1"];
-    let values = [];
-    const conditionsString = conditionSQL(keyword, category, sDate, eDate, conditions, values);
+  const limit = 3;
+  let offset = limit * (page - 1);
+  values.push(limit, offset);
 
-    conditions = ["order by "];
-    const orderByString = orderBySQL(orderBy, conditions);
-
-    const limit = 3;
-    let offset = limit * (page - 1);
-    values.push(limit, offset);
-
-    const sql = `
+  const sql = `
     select b.id, b.category_id, b.title, b.author, b.publication_date, b.catchpharase, b.price, i.url, count(l.book_id) as like_count
     from book b
     join image i on b.id = i.book_id
@@ -34,15 +19,18 @@ export const selectBookInfo = async (keyword, category, sDate, eDate, orderBy, p
     group by b.id, b.category_id, b.title, b.author, b.publication_date, b.catchpharase, b.price, i.url
     ${orderByString}
     limit ? offset ?
-    `;
+  `;
 
-    const result = await conn.query(sql, values);
-    return result[0];
-  } catch (err) {
-    throw err;
-  } finally {
-    if (conn) conn.release();
-  }
+  const result = await conn.query(sql, values);
+  return result[0];
+};
+
+const orderByMap = {
+  like: "like_count desc",
+  expansive: "b.price desc",
+  cheap: "b.price",
+  new: "b.publication_date desc",
+  old: "b.publication_date",
 };
 
 const conditionSQL = (keyword, category, sDate, eDate, conditions, values) => {

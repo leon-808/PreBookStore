@@ -1,16 +1,20 @@
 import code from "http-status-codes";
 import path from "path";
 const __dirname = path.resolve();
+import Database from "../../db.js";
+const db = Database.getInstance();
 
-import { getIdFromToken, isProperToken } from "../middleware/verifyToken.js";
-import { insertLike, deleteLike } from "../models/like.model.js";
+import { errDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { getIdFromToken, isProperToken } from "../middleware/verifyToken.middleware.js";
+import { insertLike, deleteLike } from "../repositories/like.repositories.js";
 
+// TO-DO 에러 핸들링 병합 생각해보기
 export const enableLike = async (req, res) => {
   try {
     const isbn = req.params.isbn;
     const user_id = getIdFromToken(req);
     if (!isProperToken(user_id, res, code)) return;
-    await insertLike(isbn, user_id);
+    await errDB(insertLike)(db, isbn, user_id);
     res.status(code.OK).json("좋아요 활성");
   } catch (err) {
     console.log(err);
@@ -20,14 +24,9 @@ export const enableLike = async (req, res) => {
 };
 
 export const disableLike = async (req, res) => {
-  try {
-    const isbn = req.params.isbn;
-    const user_id = getIdFromToken(req);
-    if (!isProperToken(user_id, res, code)) return;
-    await deleteLike(isbn, user_id);
-    res.status(200).json("좋아요 비활성");
-  } catch (err) {
-    console.log(err);
-    res.status(code.INTERNAL_SERVER_ERROR).end();
-  }
+  const isbn = req.params.isbn;
+  const user_id = getIdFromToken(req);
+  if (!isProperToken(user_id, res, code)) return;
+  await errDB(deleteLike)(db, isbn, user_id);
+  res.status(code.OK).json("좋아요 비활성");
 };

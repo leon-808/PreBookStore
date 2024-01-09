@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 router.use(express.json());
 
+import { errorPageHandler, errorHandler } from "../middleware/routeErrorHandler.middleware.js";
 import {
   getRecentReviews,
   getReviewsbyPage,
@@ -10,10 +11,10 @@ import {
   deleteReview,
 } from "../controllers/review.controller.js";
 
-router.get("/:isbn", getRecentReviews);
-router.get("/:isbn/:page", getReviewsbyPage);
-router.post("/:isbn", createReview);
-router.put("/:isbn", updateReview);
-router.delete("/:isbn", deleteReview);
+router.get("/:isbn", errorHandler(getRecentReviews));
+router.get("/:isbn/:page", errorHandler(getReviewsbyPage));
+router.post("/:isbn", errorHandler(createReview));
+router.put("/:isbn", errorHandler(updateReview));
+router.delete("/:isbn", errorHandler(deleteReview));
 
 export default router;

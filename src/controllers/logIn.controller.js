@@ -5,30 +5,23 @@ import dotenv from "dotenv";
 const env = dotenv.config().parsed;
 import path from "path";
 const __dirname = path.resolve();
+import Database from "../../db.js";
+const db = Database.getInstance();
 
-import { isProperToken } from "../middleware/verifyToken.js";
-import { selectUserforLogin } from "../models/login.model.js";
+import { errDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { isProperToken } from "../middleware/verifyToken.middleware.js";
+import { selectUserforLogin } from "../repositories/login.repositories.js";
 
 export const logIn_page = (req, res) => {
-  try {
-    res.sendFile(path.join(__dirname, "/views/logIn.html"));
-  } catch (err) {
-    console.log(err);
-    res.status(code.INTERNAL_SERVER_ERROR).sendFile(path.join(__dirname, "/views/500.html"));
-  }
+  res.sendFile(path.join(__dirname, "/views/logIn.html"));
 };
 
 export const proceedLogIn = async (req, res) => {
-  try {
-    const { id, password } = req.body;
-    const { db_id, db_password } = await selectUserforLogin(id);
-    if (!isProperToken(user_id, res, code)) return;
-    await bcrypt.compare(password, db_password);
-    issueToken(id, res);
-  } catch (err) {
-    console.log(err);
-    res.status(code.INTERNAL_SERVER_ERROR);
-  }
+  const { id, password } = req.body;
+  const { db_id, db_password } = await errDB(selectUserforLogin)(db, id);
+  if (id !== db_id) throw { code: code.UNAUTHORIZED, message: "입력한 ID 는 존재하지 않습니다." };
+  await bcrypt.compare(password, db_password);
+  issueToken(id, res);
 };
 
 const issueToken = (id, res) => {

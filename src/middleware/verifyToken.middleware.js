@@ -4,15 +4,10 @@ import dotenv from "dotenv";
 const env = dotenv.config().parsed;
 
 export const getIdFromToken = (req) => {
-  try {
-    if (!req.headers.authorization) return null;
-    token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, env.SECRET_KEY);
-    return decoded.id;
-  } catch (err) {
-    console.log(err);
-    return null;
-  }
+  if (!req.headers.authorization) return null;
+  const token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, env.SECRET_KEY);
+  return decoded.id;
 };
 
 export const isProperToken = (id, res, code) => {

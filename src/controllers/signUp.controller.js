@@ -1,28 +1,20 @@
 import code from "http-status-codes";
-import bcrypt from "bcrypt";
 import path from "path";
 const __dirname = path.resolve();
+import Database from "../../db.js";
+const db = Database.getInstance();
 
-import { insertUser } from "../models/signUp.model.js";
-import { genHashedPassword } from "../middleware/password.js";
+import { errorHandlerDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { insertUser } from "../repositories/signUp.repositories.js";
+import { genHashedPassword } from "../middleware/password.middleware.js";
 
 export const signUp_page = (req, res) => {
-  try {
-    res.sendFile(path.join(__dirname, "/views/signUp.html"));
-  } catch (err) {
-    console.log(err);
-    res.status(code.INTERNAL_SERVER_ERROR).sendFile(path.join(__dirname, "/views/500.html"));
-  }
+  res.sendFile(path.join(__dirname, "/views/signUp.html"));
 };
 
 export const submitSignUp = async (req, res) => {
-  try {
-    const { id, password, name, birth, tel, email, address } = req.body;
-    const hashedPassword = genHashedPassword(password);
-    insertUser(id, hashedPassword, name, birth, tel, email, address);
-    res.status(code.CREATED).end();
-  } catch (err) {
-    console.log(err);
-    res.status(code.INTERNAL_SERVER_ERROR).end();
-  }
+  const { id, password, name, birth, tel, email, address } = req.body;
+  const hashedPassword = genHashedPassword(password);
+  await errorHandlerDB(insertUser)(db, id, hashedPassword, name, birth, tel, email, address);
+  res.status(code.CREATED).end();
 };

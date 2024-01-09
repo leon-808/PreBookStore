@@ -1,27 +1,20 @@
-import path from "path";
 import code from "http-status-codes";
+import path from "path";
 const __dirname = path.resolve();
+import Database from "../../db.js";
+const db = Database.getInstance();
 
-import { ifBooksParamNull } from "../middleware/isParamNull.js";
-import { selectBookInfo } from "../models/search.model.js";
+import { errorHandlerDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { ifBooksParamNull } from "../middleware/isParamNull.middleware.js";
+import { selectBookInfo } from "../repositories/search.repositories.js";
 
 export const search_page = (req, res) => {
-  try {
-    res.sendFile(path.join(__dirname, "/views/search.html"));
-  } catch (err) {
-    console.log(err);
-    res.status(code.INTERNAL_SERVER_ERROR).sendFile(path.join(__dirname, "/views/500.html"));
-  }
+  res.sendFile(path.join(__dirname, "/views/search.html"));
 };
 
 export const getSearchResult = async (req, res) => {
-  try {
-    const [encodedKeyword, encodedCategory, sDate, eDate, orderBy, page] = ifBooksParamNull(req.query);
-    const keyword = decodeURIComponent(encodedKeyword);
-    const result = await selectBookInfo(keyword, category, sDate, eDate, orderBy, page);
-    res.status(code.OK).json(result);
-  } catch (err) {
-    console.log(err);
-    res.status(code.INTERNAL_SERVER_ERROR).end();
-  }
+  const [encodedKeyword, encodedCategory, sDate, eDate, orderBy, page] = ifBooksParamNull(req.query);
+  const keyword = decodeURIComponent(encodedKeyword);
+  const result = await errorHandlerDB(selectBookInfo)(db, keyword, category, sDate, eDate, orderBy, page);
+  res.status(code.OK).json(result);
 };

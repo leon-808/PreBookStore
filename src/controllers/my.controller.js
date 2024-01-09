@@ -2,55 +2,43 @@ import code from "http-status-codes";
 import bcrypt from "bcrypt";
 import path from "path";
 const __dirname = path.resolve();
+import Database from "../../db.js";
+const db = Database.getInstance();
 
-import { getIdFromToken, isProperToken } from "../middleware/verifyToken.js";
-import { selectUserforMyPage, selectUserPassword, updateUserInfo } from "../models/my.model.js";
-import { genHashedPassword } from "../middleware/password.js";
+import { errDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { getIdFromToken, isProperToken } from "../middleware/verifyToken.middleware.js";
+import { selectUserforMyPage, selectUserPassword, updateUserInfo } from "../repositories/my.repositories.js";
+import { genHashedPassword } from "../middleware/password.middleware.js";
 
 export const my_page = (req, res) => {
-  try {
-    res.sendFile(path.join(__dirname, "/views/my.html"));
-  } catch (err) {
-    console.log(err);
-    res.status(code.INTERNAL_SERVER_ERROR).sendFile(path.join(__dirname, "/views/500.html"));
-  }
+  res.sendFile(path.join(__dirname, "/views/my.html"));
 };
 
 export const myDetails = async (req, res) => {
-  try {
-    const user_id = getIdFromToken(req);
-    if (user_id) {
-      const userInfo = await selectUserforMyPage(user_id);
-      return res.status(code.OK).json(userInfo);
-    }
-    res.status(code.UNAUTHORIZED);
-  } catch (err) {
-    console.log(err);
-    res.status(code.INTERNAL_SERVER_ERROR);
+  const user_id = getIdFromToken(req);
+  if (user_id) {
+    const userInfo = await errDB(selectUserforMyPage)(db, user_id);
+    return res.status(code.OK).json(userInfo);
   }
+  res.status(code.UNAUTHORIZED);
 };
 
+// TO-DO 코드 분량 리팩터링 생각해보기
 export const updateMyInfo = async (req, res) => {
-  try {
-    const { old_password, new_password, new_password_check, tel, email, address } = req.body;
-    const user_id = getIdFromToken(req);
-    if (!isProperToken(user_id, res, code)) return;
+  const { old_password, new_password, new_password_check, tel, email, address } = req.body;
+  const user_id = getIdFromToken(req);
+  if (!isProperToken(user_id, res, code)) return;
 
-    const { db_password } = await selectUserPassword(user_id);
-    const isPasswordMatch = await bcrypt.compare(old_password, db_password);
-    if (!isPasswordMatch) {
-      return res.status(code.BAD_REQUEST).json("비밀번호를 잘못 입력하셨습니다.");
-    }
-
-    isNewPasswordMatch(new_password, new_password_check);
-    const hashedNewPassword = await genHashedPassword(new_password);
-    await updateUserInfo(hashedNewPassword, tel, email, address, user_id);
-    res.status(code.OK).json("회원 정보 수정 완료");
-  } catch (err) {
-    console.log(err);
-    if (err.code === code.UNAUTHORIZED) res.status(err.code).json(err.message);
-    res.status(code.INTERNAL_SERVER_ERROR);
+  const { db_password } = await errDB(selectUserPassword)(db, user_id);
+  const isPasswordMatch = await bcrypt.compare(old_password, db_password);
+  if (!isPasswordMatch) {
+    return res.status(code.BAD_REQUEST).json("비밀번호를 잘못 입력하셨습니다.");
   }
+
+  isNewPasswordMatch(new_password, new_password_check);
+  const hashedNewPassword = await genHashedPassword(new_password);
+  await errDB(updateUserInfo)(db, hashedNewPassword, tel, email, address, user_id);
+  res.status(code.OK).json("회원 정보 수정 완료");
 };
 
 const isNewPasswordMatch = (password, password_check) => {
