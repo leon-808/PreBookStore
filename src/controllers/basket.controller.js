@@ -5,8 +5,12 @@ import Database from "../../db.js";
 const db = Database.getInstance();
 
 import { errorDBHandler } from "../middleware/repositoryErrorHandler.middleware.js";
-import { getIdFromToken, isProperToken, isIDMatch } from "../middleware/verifyToken.middleware.js";
-import { selectBooksinBasket, insertBookinBasket, updateBooksinBasket } from "../repositories/basket.repositories.js";
+import {
+  selectBooksinBasket,
+  insertBookinBasket,
+  deleteBooksinBasket,
+  insertNewOrder,
+} from "../repositories/basket.repositories.js";
 
 export const basket_page = (req, res) => {
   res.sendFile(path.join(__dirname, "/views/basket.html"));
@@ -25,15 +29,6 @@ export const addBookinBasket = async (req, res, user_id) => {
   res.status(httpCode.CREATED).json(true);
 };
 
-export const updateBasketWhenUnload = async (req, res, user_id) => {
-  const { isbn_list, quantity_list, selected_list } = req.body;
-  if (!isbn_list || isbn_list.length === 0) {
-    return res.status(httpCode.OK).json("장바구니 업데이트 없음");
-  }
-  await errorDBHandler(updateBooksinBasket)(db, user_id, isbn_list, quantity_list, selected_list);
-  res.status(httpCode.OK).json("장바구니 업데이트 완료");
-};
-
 export const removeBookinBasket = async (req, res, user_id) => {
   const isbn_list = req.body.isbn_list;
   await errorDBHandler(deleteBooksinBasket)(db, user_id, isbn_list);
@@ -42,6 +37,6 @@ export const removeBookinBasket = async (req, res, user_id) => {
 
 export const requestOrderfromBasket = async (req, res, user_id) => {
   const { isbn_list, quantity_list } = req.body;
-  await errorDBHandler(insertNewOrder)(isbn_list, quantity_list);
+  await errorDBHandler(insertNewOrder)(db, user_id, isbn_list, quantity_list);
   res.status(httpCode.CREATED).json("장바구니 주문 요청");
 };

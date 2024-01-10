@@ -1,12 +1,14 @@
 import httpCode from "http-status-codes";
 import { getIdFromToken, isProperToken } from "../middleware/verifyToken.middleware.js";
 
-const errnoHttpCodeMap = {
-  1062: httpCode.CONFLICT,
+const sqlStateMap = {
+  23000: httpCode.CONFLICT,
+  45000: httpCode.INTERNAL_SERVER_ERROR,
 };
 
-const errnoMessageMap = {
-  1062: "이미 존재하는 값입니다.",
+const sqlMessageMap = {
+  23000: "이미 존재하는 값입니다.",
+  45000: "서버 내부 오류 발생.",
 };
 
 export const errorPageHandler = (handler) => async (req, res) => {
@@ -24,7 +26,7 @@ export const errorHandler = (handler) => async (req, res) => {
   } catch (err) {
     console.log(err);
     if (err.httpCode) res.status(err.httpCode).json(err.message);
-    if (err.errno) res.status(errnoHttpCodeMap[err.errno]).json(errnoMessageMap[err.errno]);
+    if (err.sqlState) res.status(sqlStateMap[err.sqlState]).json(sqlMessageMap[err.sqlState]);
     res.status(httpCode.INTERNAL_SERVER_ERROR).end();
   }
 };
@@ -37,7 +39,7 @@ export const errorHandlerwithLoggedIn = (handler) => async (req, res) => {
   } catch (err) {
     console.log(err);
     if (err.httpCode) res.status(err.httpCode).json(err.message);
-    if (err.errno) res.status(errnoHttpCodeMap[err.errno]).json(errnoMessageMap[err.errno]);
+    if (err.sqlState) res.status(sqlStateMap[err.sqlState]).json(sqlMessageMap[err.sqlState]);
     res.status(httpCode.INTERNAL_SERVER_ERROR).end();
   }
 };
