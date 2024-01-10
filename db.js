@@ -25,6 +25,10 @@ class Database {
   async getConnection() {
     return await this.pool.getConnection();
   }
+
+  async closePool() {
+    await this.pool.end();
+  }
 }
 
 export default Database;

@@ -4,7 +4,7 @@ const __dirname = path.resolve();
 import Database from "../../db.js";
 const db = Database.getInstance();
 
-import { errDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { errorDBHandler } from "../middleware/repositoryErrorHandler.middleware.js";
 import { getIdFromToken, isProperToken } from "../middleware/verifyToken.middleware.js";
 import { insertLike, deleteLike } from "../repositories/like.repositories.js";
 
@@ -14,7 +14,7 @@ export const enableLike = async (req, res) => {
     const isbn = req.params.isbn;
     const user_id = getIdFromToken(req);
     if (!isProperToken(user_id, res, code)) return;
-    await errDB(insertLike)(db, isbn, user_id);
+    await errorDBHandler(insertLike)(db, isbn, user_id);
     res.status(code.OK).json("좋아요 활성");
   } catch (err) {
     console.log(err);
@@ -27,6 +27,6 @@ export const disableLike = async (req, res) => {
   const isbn = req.params.isbn;
   const user_id = getIdFromToken(req);
   if (!isProperToken(user_id, res, code)) return;
-  await errDB(deleteLike)(db, isbn, user_id);
+  await errorDBHandler(deleteLike)(db, isbn, user_id);
   res.status(code.OK).json("좋아요 비활성");
 };

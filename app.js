@@ -30,6 +30,6 @@ app.use("/basket", basket_route);
 app.use("/order", order_route);
 app.use("/order-list", order_list_route);
 
-app.listen(env.PORT);
+if (process.env.NODE_ENV !== "test") app.listen(env.PORT);
 
 export default app;

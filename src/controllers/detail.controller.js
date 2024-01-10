@@ -4,7 +4,7 @@ const __dirname = path.resolve();
 import Database from "../../db.js";
 const db = Database.getInstance();
 
-import { errDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { errorDBHandler } from "../middleware/repositoryErrorHandler.middleware.js";
 import { getIdFromToken } from "../middleware/verifyToken.middleware.js";
 import { selectBookInfo } from "../repositories/detail.repositories.js";
 
@@ -15,6 +15,6 @@ export const detail_page = (req, res) => {
 export const getDetailofBook = async (req, res) => {
   const isbn = req.params.isbn;
   const user_id = getIdFromToken(req);
-  const result = await errDB(selectBookInfo)(db, isbn, user_id);
+  const result = await errorDBHandler(selectBookInfo)(db, isbn, user_id);
   res.status(code.OK).json(result);
 };

@@ -5,7 +5,7 @@ const __dirname = path.resolve();
 import Database from "../../db.js";
 const db = Database.getInstance();
 
-import { errDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { errorDBHandler } from "../middleware/repositoryErrorHandler.middleware.js";
 import { getIdFromToken, isProperToken } from "../middleware/verifyToken.middleware.js";
 import { selectUserforMyPage, selectUserPassword, updateUserInfo } from "../repositories/my.repositories.js";
 import { genHashedPassword } from "../middleware/password.middleware.js";
@@ -17,7 +17,7 @@ export const my_page = (req, res) => {
 export const myDetails = async (req, res) => {
   const user_id = getIdFromToken(req);
   if (user_id) {
-    const userInfo = await errDB(selectUserforMyPage)(db, user_id);
+    const userInfo = await errorDBHandler(selectUserforMyPage)(db, user_id);
     return res.status(code.OK).json(userInfo);
   }
   res.status(code.UNAUTHORIZED);
@@ -29,7 +29,7 @@ export const updateMyInfo = async (req, res) => {
   const user_id = getIdFromToken(req);
   if (!isProperToken(user_id, res, code)) return;
 
-  const { db_password } = await errDB(selectUserPassword)(db, user_id);
+  const { db_password } = await errorDBHandler(selectUserPassword)(db, user_id);
   const isPasswordMatch = await bcrypt.compare(old_password, db_password);
   if (!isPasswordMatch) {
     return res.status(code.BAD_REQUEST).json("비밀번호를 잘못 입력하셨습니다.");
@@ -37,7 +37,7 @@ export const updateMyInfo = async (req, res) => {
 
   isNewPasswordMatch(new_password, new_password_check);
   const hashedNewPassword = await genHashedPassword(new_password);
-  await errDB(updateUserInfo)(db, hashedNewPassword, tel, email, address, user_id);
+  await errorDBHandler(updateUserInfo)(db, hashedNewPassword, tel, email, address, user_id);
   res.status(code.OK).json("회원 정보 수정 완료");
 };
 

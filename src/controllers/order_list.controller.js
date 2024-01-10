@@ -4,7 +4,7 @@ const __dirname = path.resolve();
 import Database from "../../db.js";
 const db = Database.getInstance();
 
-import { errDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { errorDBHandler } from "../middleware/repositoryErrorHandler.middleware.js";
 
 export const order_list_page = (req, res) => {
   res.sendFile(path.join(__dirname, "/views/order_list.html"));

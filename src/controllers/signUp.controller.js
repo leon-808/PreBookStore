@@ -4,7 +4,7 @@ const __dirname = path.resolve();
 import Database from "../../db.js";
 const db = Database.getInstance();
 
-import { errorHandlerDB } from "../middleware/repositoryErrorHandler.middleware.js";
+import { errorDBHandler } from "../middleware/repositoryErrorHandler.middleware.js";
 import { insertUser } from "../repositories/signUp.repositories.js";
 import { genHashedPassword } from "../middleware/password.middleware.js";
 
@@ -15,6 +15,6 @@ export const signUp_page = (req, res) => {
 export const submitSignUp = async (req, res) => {
   const { id, password, name, birth, tel, email, address } = req.body;
   const hashedPassword = genHashedPassword(password);
-  await errorHandlerDB(insertUser)(db, id, hashedPassword, name, birth, tel, email, address);
+  await errorDBHandler(insertUser)(db, id, hashedPassword, name, birth, tel, email, address);
   res.status(code.CREATED).end();
 };

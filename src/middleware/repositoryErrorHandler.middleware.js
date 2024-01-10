@@ -1,4 +1,4 @@
-export const errorHandlerDB =
+export const errorDBHandler =
   (handler) =>
   async (db, ...params) => {
     let conn;
