@@ -1,4 +1,4 @@
-import code from "http-status-codes";
+import httpCode from "http-status-codes";
 import path from "path";
 const __dirname = path.resolve();
 import Database from "../../db.js";
@@ -16,5 +16,5 @@ export const submitSignUp = async (req, res) => {
   const { id, password, name, birth, tel, email, address } = req.body;
   const hashedPassword = genHashedPassword(password);
   await errorDBHandler(insertUser)(db, id, hashedPassword, name, birth, tel, email, address);
-  res.status(code.CREATED).end();
+  res.status(httpCode.CREATED).end();
 };

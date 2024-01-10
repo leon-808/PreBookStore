@@ -1,5 +1,5 @@
 import path from "path";
-import code from "http-status-codes";
+import httpCode from "http-status-codes";
 const __dirname = path.resolve();
 import Database from "../../db.js";
 const db = Database.getInstance();
@@ -16,5 +16,5 @@ export const getDetailofBook = async (req, res) => {
   const isbn = req.params.isbn;
   const user_id = getIdFromToken(req);
   const result = await errorDBHandler(selectBookInfo)(db, isbn, user_id);
-  res.status(code.OK).json(result);
+  res.status(httpCode.OK).json(result);
 };

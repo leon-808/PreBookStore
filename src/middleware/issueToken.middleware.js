@@ -8,5 +8,5 @@ export const issueToken = (id, res) => {
 };
 
 export const issueTokenforTest = (id) => {
-  return jwt.sign({ id: id }, env.SECRET_KEY, { expiresIn: "3m", issuer: "leehoseong" });
+  return jwt.sign({ id: id }, env.SECRET_KEY, { expiresIn: "10m", issuer: "leehoseong" });
 };

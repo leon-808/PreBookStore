@@ -1,4 +1,4 @@
-import code from "http-status-codes";
+import httpCode from "http-status-codes";
 import path from "path";
 const __dirname = path.resolve();
 import Database from "../../db.js";
@@ -16,5 +16,5 @@ export const getSearchResult = async (req, res) => {
   const [encodedKeyword, encodedCategory, sDate, eDate, orderBy, page] = ifBooksParamNull(req.query);
   const keyword = decodeURIComponent(encodedKeyword);
   const result = await errorDBHandler(selectBookInfo)(db, keyword, category, sDate, eDate, orderBy, page);
-  res.status(code.OK).json(result);
+  res.status(httpCode.OK).json(result);
 };

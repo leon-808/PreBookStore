@@ -17,11 +17,3 @@ export const isProperToken = (id, res, code) => {
   }
   return true;
 };
-
-export const isIDMatch = (url_id, token_id, res, code) => {
-  if (url_id !== token_id) {
-    res.status(code.UNAUTHORIZED).json("권한이 없습니다. 로그인을 해주세요.");
-    return false;
-  }
-  return true;
-};

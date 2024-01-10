@@ -1,4 +1,4 @@
-import code from "http-status-codes";
+import httpCode from "http-status-codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -19,7 +19,7 @@ export const logIn_page = (req, res) => {
 export const proceedLogIn = async (req, res) => {
   const { id, password } = req.body;
   const { db_id, db_password } = await errorDBHandler(selectUserforLogin)(db, id);
-  if (id !== db_id) throw { code: code.UNAUTHORIZED, message: "입력한 ID 는 존재하지 않습니다." };
+  if (id !== db_id) throw { code: httpCode.UNAUTHORIZED, message: "입력한 ID 는 존재하지 않습니다." };
   await bcrypt.compare(password, db_password);
   issueToken(id, res);
 };

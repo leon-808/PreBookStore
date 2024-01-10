@@ -1,4 +1,4 @@
-import code from "http-status-codes";
+import httpCode from "http-status-codes";
 import path from "path";
 const __dirname = path.resolve();
 import Database from "../../db.js";
@@ -11,5 +11,5 @@ export const order_page = (req, res) => {
 };
 
 export const getUserOrder = (req, res) => {
-  res.status(code.OK).json("유저의 주문 정보 가져오기");
+  res.status(httpCode.OK).json("유저의 주문 정보 가져오기");
 };

@@ -1,5 +1,5 @@
 import path from "path";
-import code from "http-status-codes";
+import httpCode from "http-status-codes";
 const __dirname = path.resolve();
 import Database from "../../db.js";
 const db = Database.getInstance();
@@ -13,5 +13,5 @@ export const main_page = (req, res) => {
 
 export const getNewestBooks = async (req, res) => {
   const result = await errorDBHandler(selectNewest5);
-  res.status(code.OK).json(result);
+  res.status(httpCode.OK).json(result);
 };

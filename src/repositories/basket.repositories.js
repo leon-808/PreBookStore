@@ -1,7 +1,7 @@
 export const selectBooksinBasket = async (conn, user_id) => {
   const values = [user_id];
   const sql = `
-    select b.id, b.title, b.price, i.url
+    select b.id, b.title, b.price, bk.quantity, i.url
     from basket bk
     join book b on b.id = bk.book_id
     join image i on i.book_id = bk.book_id
@@ -14,7 +14,7 @@ export const selectBooksinBasket = async (conn, user_id) => {
 export const insertBookinBasket = async (conn, user_id, isbn) => {
   const values = [user_id, isbn];
   const sql = `insert into basket (user_id, book_id) values(?, ?)`;
-  const result = await conn.query(sql, values);
+  await conn.query(sql, values);
   return;
 };
 

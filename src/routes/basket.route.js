@@ -17,10 +17,15 @@ import {
 } from "../controllers/basket.controller.js";
 
 router.get("/", errorPageHandler(basket_page));
-router.get("/:user_id", errorHandler(getBasketList));
+
+router.get("/:user_id", errorHandlerwithLoggedIn(getBasketList));
+
 router.post("/:user_id/:isbn", errorHandlerwithLoggedIn(addBookinBasket));
+
 router.put("/:user_id", errorHandlerwithLoggedIn(updateBasketWhenUnload));
+
 router.delete("/:user_id", errorHandlerwithLoggedIn(removeBookinBasket));
+
 router.post("/order", errorHandlerwithLoggedIn(requestOrderfromBasket));
 
 export default router;

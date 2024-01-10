@@ -1,4 +1,4 @@
-import code from "http-status-codes";
+import httpCode from "http-status-codes";
 import path from "path";
 const __dirname = path.resolve();
 import Database from "../../db.js";
@@ -11,9 +11,9 @@ export const order_list_page = (req, res) => {
 };
 
 export const proceedToOrderList = (req, res) => {
-  res.status(code.CREATED).json("주문 확정 후 order_list 테이블에 추가");
+  res.status(httpCode.CREATED).json("주문 확정 후 order_list 테이블에 추가");
 };
 
 export const getOrderList = (req, res) => {
-  res.status(code.OK).json("주문 조회 내역 가져오기");
+  res.status(httpCode.OK).json("주문 조회 내역 가져오기");
 };
