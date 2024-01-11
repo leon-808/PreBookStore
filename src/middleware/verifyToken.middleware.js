@@ -12,7 +12,7 @@ export const getIdFromToken = (req) => {
 
 export const isProperToken = (id, res, code) => {
   if (!id) {
-    res.status(code.UNAUTHORIZED).json("권한이 없습니다.. 로그인을 해주세요.");
+    res.status(code.UNAUTHORIZED).json("권한이 없습니다. 로그인을 해주세요.");
     return false;
   }
   return true;
