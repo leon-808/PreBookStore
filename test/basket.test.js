@@ -7,7 +7,7 @@ import { issueTokenforTest } from "../src/middleware/issueToken.middleware.js";
 
 let server;
 let db;
-let token = issueTokenforTest("leehoosgg");
+let token;
 
 beforeAll((done) => {
   server = app.listen(0, done);
@@ -21,7 +21,7 @@ afterAll((done) => {
 });
 
 describe("장바구니 페이지 전송 테스트", () => {
-  it("GET /basket 에서 basket.html 을 전송해야함", (done) => {
+  it("GET /basket 에서 basket.html 을 전송", (done) => {
     test(app)
       .get("/basket")
       .expect("Content-Type", /html/)
@@ -59,7 +59,7 @@ describe("장바구니 목록 불러오기 테스트", () => {
 });
 
 describe("장바구니에 도서 추가 테스트", () => {
-  it("POST /:user_id/:isbn 에서 해당 유저의 장바구니에 새로운 도서 하나를 추가", (done) => {
+  it("POST /:user_id/:isbn 에서 해당 유저의 장바구니에 새로운 도서 하나 추가", (done) => {
     test(app)
       .post("/basket/leehoosgg/9788950922382") // 반지의 제왕
       .set("Authorization", `Bearer ${token}`)
@@ -68,7 +68,7 @@ describe("장바구니에 도서 추가 테스트", () => {
       .end(done);
   });
 
-  it("POST /:user_id/:isbn 에서 해당 유저의 장바구니에 이미 담겨 있는 도서 하나를 추가", (done) => {
+  it("POST /:user_id/:isbn 에서 해당 유저의 장바구니에 이미 담겨있는 도서는 추가 차단", (done) => {
     test(app)
       .post("/basket/leehoosgg/9788937437564") // 참을 수 없는 존재의 가벼움
       .set("Authorization", `Bearer ${token}`)
@@ -91,6 +91,8 @@ describe("장바구니의 도서 삭제 테스트", () => {
       .end(done);
   });
 });
+
+// TO-DO DB 초기화 작업하기 orders, order_detail
 
 describe("장바구니 주문 확정 테스트", () => {
   it("POST /:user_id 에서 해당 유저가 장바구니에서 선택한 도서들을 주문", (done) => {
