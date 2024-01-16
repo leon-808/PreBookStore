@@ -9,10 +9,10 @@ let server;
 let db;
 let token;
 
-beforeAll((done) => {
-  server = app.listen(0, done);
+beforeAll(async () => {
+  server = app.listen(0);
   db = Database.getInstance();
-  token = issueTokenforTest("leehoosgg");
+  token = issueTokenforTest("basket");
 });
 
 afterAll((done) => {
@@ -49,7 +49,7 @@ describe("장바구니 목록 불러오기 테스트", () => {
     ];
 
     test(app)
-      .get("/basket/leehoosgg")
+      .get("/basket/basket")
       .set("Authorization", `Bearer ${token}`)
       .expect("Content-Type", /json/)
       .expect(httpCode.OK)
@@ -61,7 +61,7 @@ describe("장바구니 목록 불러오기 테스트", () => {
 describe("장바구니에 도서 추가 테스트", () => {
   it("POST /:user_id/:isbn 에서 해당 유저의 장바구니에 새로운 도서 하나 추가", (done) => {
     test(app)
-      .post("/basket/leehoosgg/9788950922382") // 반지의 제왕
+      .post("/basket/basket/9788950922382") // 반지의 제왕
       .set("Authorization", `Bearer ${token}`)
       .expect("Content-Type", /json/)
       .expect((res) => expect(res.body).toEqual(true))
@@ -70,7 +70,7 @@ describe("장바구니에 도서 추가 테스트", () => {
 
   it("POST /:user_id/:isbn 에서 해당 유저의 장바구니에 이미 담겨있는 도서는 추가 차단", (done) => {
     test(app)
-      .post("/basket/leehoosgg/9788937437564") // 참을 수 없는 존재의 가벼움
+      .post("/basket/basket/9788937437564") // 참을 수 없는 존재의 가벼움
       .set("Authorization", `Bearer ${token}`)
       .expect("Content-Type", /json/)
       .expect(httpCode.CONFLICT)
@@ -82,7 +82,7 @@ describe("장바구니에 도서 추가 테스트", () => {
 describe("장바구니의 도서 삭제 테스트", () => {
   it("DELETE /:user_id 에서 해당 유저가 장바구니에서 선택한 도서들을 삭제", (done) => {
     test(app)
-      .delete("/basket/leehoosgg")
+      .delete("/basket/basket")
       .set("Authorization", `Bearer ${token}`)
       .send({ isbn_list: ["9788950922382"] })
       .expect("Content-Type", /json/)
@@ -92,11 +92,10 @@ describe("장바구니의 도서 삭제 테스트", () => {
   });
 });
 
-// TO-DO DB 초기화 작업하기 orders, order_detail
-
 describe("장바구니 주문 확정 테스트", () => {
-  it("POST /:user_id 에서 해당 유저가 장바구니에서 선택한 도서들을 주문", (done) => {
-    test(app)
+  it("POST /basket/order 에서 해당 유저가 장바구니에서 선택한 도서들을 주문", async () => {
+    await resetBasketsOrder(db);
+    const res = await test(app)
       .post("/basket/order")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -109,7 +108,7 @@ describe("장바구니 주문 확정 테스트", () => {
       .end(done);
   });
 
-  it("POST /:user_id 에서 해당 유저가 이미 진행중인 주문이 있을 때 재 주문 차단", (done) => {
+  it("POST /basket/order 에서 해당 유저가 이미 진행중인 주문이 있을 때 재 주문 차단", (done) => {
     test(app)
       .post("/basket/order")
       .set("Authorization", `Bearer ${token}`)
@@ -123,3 +122,11 @@ describe("장바구니 주문 확정 테스트", () => {
       .end(done);
   });
 });
+
+const resetBasketsOrder = async (db) => {
+  const conn = await db.getConnection();
+  await conn.query("delete from order_detail where orders_id like 'basket%'");
+  await conn.query("delete from orders where user_id = 'basket'");
+  if (conn) conn.release();
+  return;
+};

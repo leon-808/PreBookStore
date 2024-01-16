@@ -12,7 +12,7 @@ let token;
 beforeAll((done) => {
   server = app.listen(0, done);
   db = Database.getInstance();
-  token = issueTokenforTest("leehoosgg");
+  token = issueTokenforTest("detail");
 });
 
 afterAll((done) => {

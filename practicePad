@@ -1,0 +1,6 @@
+const url = "localhost:8888/books/search?keyword=해리&category=null&sDate=null&eDate=null&orderBy=null&page=1";
+let encoded = url.replace(/[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/g, (match) => {
+  return encodeURIComponent(match);
+});
+
+console.log(encoded);
