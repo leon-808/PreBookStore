@@ -6,7 +6,7 @@ const db = Database.getInstance();
 
 import { errorDBHandler } from "../middleware/repositoryErrorHandler.middleware.js";
 import { insertUser } from "../repositories/signUp.repositories.js";
-import { genHashedPassword } from "../middleware/password.middleware.js";
+import { genHashedPassword } from "../middleware/genHashedPassword.middleware.js";
 
 export const signUp_page = (req, res) => {
   res.sendFile(path.join(__dirname, "/views/signUp.html"));

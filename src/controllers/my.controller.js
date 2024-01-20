@@ -8,7 +8,7 @@ const db = Database.getInstance();
 import { errorDBHandler } from "../middleware/repositoryErrorHandler.middleware.js";
 import { getIdFromToken, isProperToken } from "../middleware/verifyToken.middleware.js";
 import { selectUserforMyPage, selectUserPassword, updateUserInfo } from "../repositories/my.repositories.js";
-import { genHashedPassword } from "../middleware/password.middleware.js";
+import { genHashedPassword } from "../middleware/genHashedPassword.middleware.js";
 
 export const my_page = (req, res) => {
   res.sendFile(path.join(__dirname, "/views/my.html"));

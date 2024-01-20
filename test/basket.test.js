@@ -128,5 +128,4 @@ const resetBasketsOrder = async (db) => {
   await conn.query("delete from order_detail where orders_id like 'basket%'");
   await conn.query("delete from orders where user_id = 'basket'");
   if (conn) conn.release();
-  return;
 };
