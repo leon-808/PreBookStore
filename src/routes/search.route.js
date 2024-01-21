@@ -6,6 +6,6 @@ import { errorPageHandler, errorHandler } from "../middleware/routeErrorHandler.
 import { search_page, getSearchResult } from "../controllers/search.controller.js";
 
 router.get("/", errorPageHandler(search_page));
-router.get("/search", errorPageHandler(getSearchResult));
+router.get("/search", errorHandler(getSearchResult));
 
 export default router;

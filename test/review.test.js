@@ -21,7 +21,7 @@ afterAll((done) => {
 });
 
 describe("리뷰 가져오기 테스트", () => {
-  it("/review/:isbn/:page 에서 해당 도서에 대한 사용자의 리뷰를 최신순으로 5개를 가져와야 함", (done) => {
+  it("/review/:isbn/:page 에서 해당 도서에 대한 사용자의 리뷰를 최신순으로 5개 전송", (done) => {
     const answer = [
       {
         user_id: "review3",
@@ -50,7 +50,7 @@ describe("리뷰 가져오기 테스트", () => {
 });
 
 describe("리뷰 작성 테스트", () => {
-  it("/review/:isbn 에서 작성한 리뷰가 등록되어야 함", (done) => {
+  it("/review/:isbn 에서 작성한 리뷰가 등록", (done) => {
     test(app)
       .post("/review/9788983925664")
       .set("Authorization", `Bearer ${token}`)
@@ -64,7 +64,7 @@ describe("리뷰 작성 테스트", () => {
       .end(done);
   });
 
-  it("/review/:isbn 에서 이미 작성한 리뷰가 있다면 요청을 거부해야 함", (done) => {
+  it("/review/:isbn 에서 이미 작성한 리뷰가 있다면 요청을 거부", (done) => {
     test(app)
       .post("/review/9788983925664")
       .set("Authorization", `Bearer ${token}`)
@@ -80,7 +80,7 @@ describe("리뷰 작성 테스트", () => {
 });
 
 describe("리뷰 수정 테스트", () => {
-  it("/review/:isbn 에서 이미 작성한 리뷰를 수정해야함", (done) => {
+  it("/review/:isbn 에서 이미 작성한 리뷰를 수정", (done) => {
     test(app)
       .put("/review/9788983925664")
       .set("Authorization", `Bearer ${token}`)
@@ -94,7 +94,7 @@ describe("리뷰 수정 테스트", () => {
       .end(done);
   });
 
-  it("/review/:isbn 에서 수정한 리뷰가 잘 등록되었는지 확인해야함", async () => {
+  it("/review/:isbn 에서 수정한 리뷰가 잘 등록되었는지 확인", async () => {
     const conn = await db.getConnection();
     const answer =
       "현대 사회에서 마법사가 된다는 상상을 최초로 크게 히트시킨 작품으로 판타지를 좋아한다면 필독서인거 같아요";
@@ -105,7 +105,7 @@ describe("리뷰 수정 테스트", () => {
 });
 
 describe("리뷰 삭제 테스트", () => {
-  it("/review/:isbn 에서 해당 리뷰를 삭제해야함", (done) => {
+  it("/review/:isbn 에서 해당 리뷰를 삭제", (done) => {
     test(app)
       .delete("/review/9788983925664")
       .set("Authorization", `Bearer ${token}`)
